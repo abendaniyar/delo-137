@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Дело №137. Тайна красной косынки — ИИ-квест</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDE6D3;
+    --paper-2:#E1D6B9;
+    --paper-3:#D8CBA8;
+    --folder:#B98A4A;
+    --ink:#221F19;
+    --ink-soft:#5C5646;
+    --red:#A32B1F;
+    --red-dark:#7A1F17;
+    --steppe:#4E5D3C;
+    --amber:#B07A22;
+    --line: rgba(34,31,25,0.18);
+    --shadow: 0 2px 0 rgba(34,31,25,0.06), 0 10px 24px -12px rgba(34,31,25,0.35);
+    --radius: 2px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'PT Serif', Georgia, serif;
+    line-height:1.6;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(185,138,74,0.06), transparent 45%),
+      radial-gradient(circle at 90% 80%, rgba(163,43,31,0.05), transparent 40%);
+  }
+  h1,h2,h3,h4{
+    font-family:'Old Standard TT', Georgia, serif;
+    font-weight:700;
+    color:var(--ink);
+    margin:0 0 0.4em;
+  }
+  .mono{font-family:'JetBrains Mono', monospace;}
+  a{color:var(--red-dark);}
+  p{margin:0 0 1em;}
+  img{max-width:100%;}
+
+  /* ---------- Layout shell ---------- */
+  .wrap{max-width:920px; margin:0 auto; padding:0 20px;}
+  section{padding:64px 0; border-bottom:1px solid var(--line);}
+  section:last-of-type{border-bottom:none;}
+
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--red-dark);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px; height:1px; background:var(--red-dark);
+  }
+
+  /* ---------- Top folder-tab nav ---------- */
+  .topnav{
+    position:sticky; top:0; z-index:50;
+    background:var(--ink);
+    border-bottom:3px solid var(--red);
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .topnav::-webkit-scrollbar{display:none;}
+  .topnav-inner{
+    display:flex; align-items:stretch; min-width:max-content;
+    padding:0 12px;
+  }
+  .topnav .case-id{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--paper);
+    font-size:13px;
+    display:flex; align-items:center;
+    padding:0 16px 0 4px;
+    letter-spacing:0.05em;
+    white-space:nowrap;
+    border-right:1px solid rgba(237,230,211,0.2);
+    margin-right:4px;
+  }
+  .topnav .case-id b{color:var(--red);}
+  .topnav a{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:#C9C2AE;
+    text-decoration:none;
+    padding:14px 14px;
+    white-space:nowrap;
+    border-bottom:3px solid transparent;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .topnav a:hover{color:var(--paper); border-bottom-color:var(--red);}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    background:
+      linear-gradient(180deg, rgba(34,31,25,0.94), rgba(34,31,25,0.88)),
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 6px);
+    color:var(--paper);
+    padding:96px 0 80px;
+    overflow:hidden;
+    border-bottom:3px solid var(--red);
+  }
+  .ribbon{
+    position:absolute; top:34px; right:-92px;
+    width:340px; padding:9px 0; text-align:center;
+    background:var(--red);
+    color:#F4E9DE;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px; letter-spacing:0.12em; text-transform:uppercase;
+    transform:rotate(37deg);
+    box-shadow:0 8px 18px -6px rgba(0,0,0,0.5);
+    border-top:1px solid rgba(255,255,255,0.25);
+    border-bottom:1px solid rgba(0,0,0,0.25);
+  }
+  .hero .stamp{
+    display:inline-block;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; letter-spacing:0.1em;
+    color:var(--red);
+    border:1.5px solid var(--red);
+    padding:4px 10px;
+    transform:rotate(-3deg);
+    margin-bottom:22px;
+  }
+  .hero h1{
+    font-size:clamp(38px, 7vw, 68px);
+    color:var(--paper);
+    line-height:1.02;
+    margin-bottom:6px;
+    max-width:11ch;
+  }
+  .hero .subtitle{
+    font-family:'Old Standard TT', serif;
+    font-style:italic;
+    font-size:clamp(20px, 3vw, 28px);
+    color:#D8CBA8;
+    margin-bottom:28px;
+  }
+  .hero .basis{
+    font-size:15px; color:#B7AF98; max-width:52ch; margin-bottom:32px;
+  }
+  .hero .basis em{color:#D8CBA8; font-style:italic;}
+  .meta-row{
+    display:flex; flex-wrap:wrap; gap:10px;
+  }
+  .meta-tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; letter-spacing:0.04em;
+    color:var(--paper);
+    background:rgba(237,230,211,0.08);
+    border:1px solid rgba(237,230,211,0.25);
+    padding:8px 12px;
+  }
+  .meta-tag b{color:#D8CBA8; font-weight:700;}
+  .scrolldown{
+    margin-top:44px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px; color:#B7AF98; text-transform:uppercase; letter-spacing:0.08em;
+  }
+
+  /* ---------- Section headers ---------- */
+  .sec-num{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--folder);
+    font-size:13px;
+  }
+  .sec-title{font-size:clamp(26px,4vw,36px); max-width:24ch;}
+  .sec-lede{color:var(--ink-soft); max-width:62ch; font-size:17px;}
+
+  /* ---------- Cards / dossier sheet ---------- */
+  .sheet{
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    box-shadow:var(--shadow);
+    padding:28px 30px;
+    position:relative;
+  }
+  .sheet + .sheet{margin-top:18px;}
+  .sheet::before{
+    content:"";
+    position:absolute; left:0; top:16px; bottom:16px; width:4px;
+    background:var(--folder);
+  }
+  .sheet{padding-left:34px;}
+
+  /* ---------- Tables ---------- */
+  .table-wrap{overflow-x:auto; box-shadow:var(--shadow); border:1px solid var(--line);}
+  table{
+    border-collapse:collapse; width:100%; min-width:480px;
+    background:var(--paper-2);
+    font-size:15px;
+  }
+  table caption{
+    text-align:left; font-family:'JetBrains Mono', monospace; font-size:12px;
+    letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft);
+    padding:10px 16px; background:var(--paper-3); border-bottom:1px solid var(--line);
+  }
+  th, td{
+    text-align:left; padding:12px 16px; border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  th{
+    font-family:'JetBrains Mono', monospace; font-size:12px; text-transform:uppercase;
+    letter-spacing:0.05em; color:var(--paper); background:var(--ink);
+  }
+  tr:nth-child(even) td{background:rgba(184,171,132,0.16);}
+  td:first-child, th:first-child{font-weight:700;}
+
+  .badge{
+    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:12px;
+    padding:2px 8px; border-radius:2px; font-weight:700; letter-spacing:0.03em;
+  }
+  .badge-z{background:rgba(78,93,60,0.15); color:var(--steppe); border:1px solid var(--steppe);}
+  .badge-t{background:rgba(176,122,34,0.15); color:var(--amber); border:1px solid var(--amber);}
+  .badge-n{background:rgba(163,43,31,0.12); color:var(--red-dark); border:1px solid var(--red-dark);}
+
+  /* ---------- Characters ---------- */
+  .cast-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(210px,1fr)); gap:14px;
+  }
+  .cast-card{
+    background:var(--paper-2); border:1px solid var(--line); box-shadow:var(--shadow);
+    padding:18px 18px 20px;
+  }
+  .cast-avatar{
+    width:44px; height:44px; border-radius:50%;
+    background:var(--ink); color:var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Old Standard TT',serif; font-size:19px; margin-bottom:12px;
+  }
+  .cast-card h4{font-size:18px; margin-bottom:6px;}
+  .cast-card p{font-size:14.5px; color:var(--ink-soft); margin:0;}
+
+  /* ---------- Two-column instructions ---------- */
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:720px){.two-col{grid-template-columns:1fr;}}
+  .instr h3{font-size:19px; display:flex; align-items:center; gap:10px;}
+  .instr-icon{
+    width:28px;height:28px;border:1.5px solid var(--red-dark); color:var(--red-dark);
+    display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace;
+    font-size:13px; flex:none;
+  }
+  .instr ol{padding-left:20px; margin:12px 0 0;}
+  .instr li{margin-bottom:8px; font-size:15.5px;}
+  .note-box{
+    margin-top:18px; padding:14px 16px; background:rgba(163,43,31,0.06);
+    border-left:3px solid var(--red); font-size:14.5px; color:var(--ink-soft);
+  }
+
+  /* ---------- Case-board timeline (signature element) ---------- */
+  .board{position:relative; padding-left:26px;}
+  .board::before{
+    content:"";
+    position:absolute; left:5px; top:6px; bottom:6px; width:2px;
+    background:repeating-linear-gradient(180deg, var(--red) 0 8px, transparent 8px 14px);
+  }
+  .board-node{position:relative; padding:0 0 30px 22px;}
+  .board-node:last-child{padding-bottom:0;}
+  .board-node::before{
+    content:""; position:absolute; left:-26px; top:4px;
+    width:12px; height:12px; border-radius:50%;
+    background:var(--paper); border:2px solid var(--red);
+  }
+  .board-node.start::before, .board-node.final::before{
+    background:var(--red); border-color:var(--red-dark);
+  }
+  .board-card{
+    background:var(--paper-2); border:1px solid var(--line); box-shadow:var(--shadow);
+    padding:16px 20px;
+  }
+  .board-card .lvl-tag{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--red-dark);
+    text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px; display:block;
+  }
+  .board-card h4{font-size:19px; margin-bottom:6px;}
+  .board-card p{font-size:14.5px; color:var(--ink-soft); margin-bottom:0;}
+  .board-card .pts{
+    float:right; font-family:'JetBrains Mono', monospace; font-size:13px;
+    color:var(--ink); background:var(--paper-3); padding:3px 9px; border:1px solid var(--line);
+  }
+
+  /* ---------- Score gauge ---------- */
+  .gauge{display:flex; width:100%; height:34px; border:1px solid var(--ink); overflow:hidden; margin:24px 0 10px;}
+  .gauge div{display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--paper);}
+  .g1{flex:14; background:#7A7360;}
+  .g2{flex:7; background:var(--steppe);}
+  .g3{flex:5; background:var(--amber);}
+  .g4{flex:4; background:var(--red);}
+  .gauge-labels{display:flex; font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--ink-soft); justify-content:space-between;}
+
+  /* ---------- Master prompt ---------- */
+  .prompt-doc{
+    background:#F5F0E2; border:1px solid var(--line); box-shadow:var(--shadow);
+    padding:26px 28px; position:relative;
+  }
+  .prompt-doc::before{
+    content:"MASTER-PROMPT"; position:absolute; top:14px; right:18px;
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--paper-3);
+    letter-spacing:0.1em;
+  }
+  .prompt-doc pre{
+    white-space:pre-wrap; word-wrap:break-word;
+    font-family:'JetBrains Mono', monospace; font-size:13.5px; line-height:1.7;
+    color:var(--ink); margin:0;
+  }
+  .copy-btn{
+    margin-top:18px;
+    font-family:'JetBrains Mono', monospace; font-size:13px; text-transform:uppercase;
+    letter-spacing:0.06em; color:var(--paper); background:var(--red-dark);
+    border:none; padding:11px 20px; cursor:pointer; transition:background .15s ease;
+  }
+  .copy-btn:hover{background:var(--red);}
+  .copy-btn:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
+  .copy-btn.copied{background:var(--steppe);}
+
+  /* ---------- Level accordions ---------- */
+  details.level{
+    background:var(--paper-2); border:1px solid var(--line); box-shadow:var(--shadow);
+    margin-bottom:12px;
+  }
+  details.level summary{
+    list-style:none; cursor:pointer; padding:18px 22px;
+    display:flex; align-items:center; gap:16px;
+    font-family:'Old Standard TT', serif;
+  }
+  details.level summary::-webkit-details-marker{display:none;}
+  details.level summary .lvl-num{
+    font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--paper);
+    background:var(--red-dark); padding:5px 10px; flex:none;
+  }
+  details.level summary .lvl-title{font-size:19px; flex:1;}
+  details.level summary .lvl-arrow{
+    font-family:'JetBrains Mono', monospace; color:var(--ink-soft); transition:transform .18s ease; flex:none;
+  }
+  details.level[open] summary .lvl-arrow{transform:rotate(90deg);}
+  details.level .lvl-body{padding:0 24px 26px 24px;}
+  .lvl-body h5{font-size:14px; text-transform:uppercase; letter-spacing:0.05em; font-family:'JetBrains Mono',monospace; color:var(--red-dark); margin:20px 0 8px;}
+  .lvl-body p{font-size:15.5px; margin-bottom:10px;}
+  .hint{
+    font-size:14px; color:var(--ink-soft); background:rgba(78,93,60,0.08);
+    border-left:3px solid var(--steppe); padding:10px 14px; margin-top:10px;
+  }
+  .teacher-key{margin-top:14px;}
+  .teacher-key summary{
+    cursor:pointer; font-family:'JetBrains Mono', monospace; font-size:12px;
+    text-transform:uppercase; letter-spacing:0.05em; color:var(--red-dark);
+    padding:8px 0;
+  }
+
+  /* ---------- Final closed case ---------- */
+  .closed-case{
+    background:var(--ink); color:var(--paper); padding:40px 34px;
+    position:relative; overflow:hidden;
+  }
+  .closed-case .stamp-final{
+    display:inline-block; border:3px solid var(--red); color:var(--red);
+    font-family:'JetBrains Mono', monospace; font-weight:700; font-size:20px;
+    letter-spacing:0.08em; padding:8px 18px; transform:rotate(-4deg);
+    margin-bottom:22px;
+  }
+  .closed-case pre{
+    white-space:pre-wrap; font-family:'JetBrains Mono', monospace; font-size:14px;
+    color:#D8CBA8; line-height:1.85; margin:0;
+  }
+  .closed-case .final-note{
+    margin-top:22px; padding-top:20px; border-top:1px solid rgba(237,230,211,0.2);
+    font-family:'Old Standard TT', serif; font-style:italic; font-size:16.5px; color:var(--paper);
+  }
+
+  /* ---------- Small utility ---------- */
+  .grid-3{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px;}
+  .mini-tag{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-soft);
+    background:var(--paper-3); padding:3px 9px; display:inline-block; border:1px solid var(--line);
+  }
+  footer{
+    padding:40px 0 60px; text-align:center; font-family:'JetBrains Mono', monospace;
+    font-size:12.5px; color:var(--ink-soft);
+  }
+
+  /* ---------- Gate (intro screen) ---------- */
+  .gate{
+    background:var(--ink);
+    color:var(--paper);
+    padding:56px 0 46px;
+    border-bottom:3px solid var(--red);
+  }
+  .gate .case-id{
+    font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:0.08em;
+    color:#C9C2AE; margin-bottom:18px;
+  }
+  .gate .case-id b{color:var(--red);}
+  .gate h2{
+    color:var(--paper); font-size:clamp(22px,3.4vw,30px); max-width:22ch; margin-bottom:8px;
+  }
+  .gate .gate-lede{color:#B7AF98; font-size:15px; max-width:56ch; margin-bottom:30px;}
+  .gate-block{margin-bottom:30px;}
+  .gate-block:last-child{margin-bottom:0;}
+  .gate-label{
+    font-family:'JetBrains Mono', monospace; font-size:12px; text-transform:uppercase;
+    letter-spacing:0.08em; color:var(--red); display:block; margin-bottom:12px;
+  }
+  .gate-langs{display:flex; gap:10px; flex-wrap:wrap;}
+  .gate-langs button{
+    font-family:'JetBrains Mono', monospace; font-size:14px; letter-spacing:0.04em;
+    background:transparent; border:1.5px solid rgba(237,230,211,0.35); color:var(--paper);
+    padding:11px 22px; cursor:pointer; transition:all .15s ease;
+  }
+  .gate-langs button.active{background:var(--red); border-color:var(--red); color:#F4E9DE;}
+  .gate-langs button:hover:not(.active){border-color:var(--red);}
+
+  /* ---------- Language switcher ---------- */
+  .lang-switch{
+    display:flex; align-items:center; gap:2px; margin-left:auto;
+    padding:0 6px 0 14px;
+  }
+  .lang-switch button{
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.04em;
+    background:transparent; border:1px solid rgba(237,230,211,0.28); color:#C9C2AE;
+    padding:6px 10px; cursor:pointer; transition:all .15s ease;
+  }
+  .lang-switch button.active{background:var(--red); border-color:var(--red); color:#F4E9DE;}
+  .lang-switch button:hover:not(.active){border-color:var(--red); color:var(--paper);}
+
+  ::selection{background:var(--red); color:var(--paper);}
+
+  a:focus-visible, summary:focus-visible, button:focus-visible{
+    outline:2px solid var(--red-dark); outline-offset:2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="wrap">
+    <div class="case-id">ДЕЛО <b>№137</b> · ТАЙНА КРАСНОЙ КОСЫНКИ</div>
+    <h2 data-i18n="gate.title">Прежде чем открыть дело</h2>
+    <p class="gate-lede" data-i18n="gate.lede">Выберите язык прохождения — это займёт несколько секунд.</p>
+
+    <div class="gate-block">
+      <span class="gate-label" data-i18n="gate.lang">Язык / Тіл / Language</span>
+      <div class="gate-langs lang-switch" role="group" aria-label="Язык / Тіл / Language">
+        <button type="button" data-lang="ru" class="active">RU — Русский</button>
+        <button type="button" data-lang="kz">KZ — Қазақша</button>
+        <button type="button" data-lang="en">EN — English</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="topnav" aria-label="Разделы дела">
+  <div class="topnav-inner">
+    <div class="case-id">ДЕЛО <b>№137</b></div>
+    <a href="#dossier" data-i18n="nav.dossier">Досье</a>
+    <a href="#cast" data-i18n="nav.cast">Лица</a>
+    <a href="#instructions" data-i18n="nav.instructions">Инструкции</a>
+    <a href="#map" data-i18n="nav.map">Карта</a>
+    <a href="#score" data-i18n="nav.score">Баллы</a>
+    <a href="#tracks" data-i18n="nav.tracks">Направления</a>
+    <a href="#final" data-i18n="nav.final">Финал</a>
+    <a href="#sources" data-i18n="nav.sources">Источники</a>
+    <div class="lang-switch" role="group" aria-label="Язык / Тіл / Language">
+      <button type="button" data-lang="ru" class="active">RU</button>
+      <button type="button" data-lang="kz">KZ</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="ribbon" data-i18n="hero.ribbon">Красная косынка</div>
+  <div class="wrap">
+    <span class="stamp" data-i18n="hero.stamp">Готов к апробации</span>
+    <h1 data-i18n="hero.title">Дело № 137.<br>Тайна красной&nbsp;косынки</h1>
+    <div class="subtitle" data-i18n="hero.subtitle">Авторский ИИ-квест по литературе</div>
+    <p class="basis" data-i18n="hero.basis">По повести Чингиза Айтматова <em>«Тополёк мой в красной косынке»</em>. Направление: литература + искусственный интеллект + профилактика токсичных отношений.</p>
+    <div class="meta-row">
+      <span class="meta-tag"><b data-i18n="hero.meta.age">Возраст:</b> <span data-i18n="hero.meta.ageval">14–16 лет</span></span>
+      <span class="meta-tag"><b data-i18n="hero.meta.time">Время:</b> <span data-i18n="hero.meta.timeval">30–40 мин</span></span>
+      <span class="meta-tag"><b data-i18n="hero.meta.format">Формат:</b> <span data-i18n="hero.meta.formatval">индивидуально / в парах</span></span>
+      <span class="meta-tag"><b data-i18n="hero.meta.platform">Платформа:</b> ChatGPT</span>
+      <span class="meta-tag"><b data-i18n="hero.meta.max">Максимум:</b> <span data-i18n="hero.meta.maxval">30 баллов</span></span>
+    </div>
+    <div class="scrolldown" data-i18n="hero.scroll">↓ открыть дело</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- 1. DOSSIER / PASSPORT -->
+  <section id="dossier">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="s1.eyebrow">01 — Паспорт квеста</div>
+      <h2 class="sec-title" data-i18n="s1.title">Досье проекта</h2>
+      <p class="sec-lede" data-i18n="s1.lede">Формальные параметры квеста — то, что фиксируется в протоколе апробации перед началом работы.</p>
+      <div id="block-s1" style="margin-top:26px;">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Параметр</th><th>Содержание</th></tr></thead>
+          <tbody>
+            <tr><td>Название</td><td>«Дело № 137. Тайна красной косынки»</td></tr>
+            <tr><td>Литературная основа</td><td>Ч. Т. Айтматов, «Тополёк мой в красной косынке»</td></tr>
+            <tr><td>Целевая аудитория</td><td>Подростки 14–16 лет</td></tr>
+            <tr><td>Формат</td><td>Диалоговый ИИ-квест в ChatGPT</td></tr>
+            <tr><td>Продолжительность</td><td>30–40 минут</td></tr>
+            <tr><td>Главная идея</td><td>Через анализ поступков героев научиться видеть связь между выбором, доверием, ответственностью и последствиями</td></tr>
+            <tr><td>Продуктовый результат</td><td>Индивидуальный итоговый профиль участника + «Кодекс здоровых отношений»</td></tr>
+            <tr><td>Максимум баллов</td><td>30</td></tr>
+            <tr><td>Количество направлений</td><td>3 + финальное испытание</td></tr>
+            <tr><td>Роль ИИ</td><td>Ведущий, навигатор, оценщик аргументации и генератор обратной связи</td></tr>
+            <tr><td>Форма проведения</td><td>Урок литературы, классный час, внеклассное занятие, апробация проекта</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sheet" style="margin-top:30px;">
+        <h3 style="font-size:20px;">Цель квеста</h3>
+        <p style="margin:0;"><b>Цель:</b> через анализ повести научить подростков видеть связь между поступком, доверием, ответственностью и последствиями — и распознавать уважительное, тревожное и разрушительное поведение в отношениях.</p>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. CAST -->
+  <section id="cast">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="s2.eyebrow">02 — Сюжетная основа</div>
+      <h2 class="sec-title" data-i18n="s2.title">Действующие лица дела</h2>
+      <p class="sec-lede" data-i18n="s2.lede">Квест опирается только на опорные события повести: знакомство Ильяса и Асели, их совместная жизнь и рождение сына Самата, конфликт и измена Ильяса Кадиче, уход Асели, встреча с Байтемиром, отказ Асели вернуться и позднее осознание Ильясом последствий своих поступков.</p>
+      <div class="cast-grid" id="block-s2" style="margin-top:26px;">
+        <div class="cast-card"><div class="cast-avatar">И</div><h4>Ильяс</h4><p>Поступки, выбор, ответственность, позднее осознание последствий.</p></div>
+        <div class="cast-card"><div class="cast-avatar">А</div><h4>Асель</h4><p>Право на решение, границы, самостоятельность, выбор спокойной жизни.</p></div>
+        <div class="cast-card"><div class="cast-avatar">Б</div><h4>Байтемир</h4><p>Уважение к решению Асели, забота о семье, отсутствие принуждения.</p></div>
+        <div class="cast-card"><div class="cast-avatar">С</div><h4>Самат</h4><p>Ребёнок как часть семейной истории и показатель последствий взрослых решений.</p></div>
+        <div class="cast-card"><div class="cast-avatar">К</div><h4>Кадича</h4><p>Линия, связанная с изменой Ильяса и последствиями нарушенного доверия.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. INSTRUCTIONS -->
+  <section id="instructions">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="s3.eyebrow">03 — Протокол проведения</div>
+      <h2 class="sec-title" data-i18n="s3.title">Инструкции</h2>
+      <div class="two-col" id="block-s3" style="margin-top:26px;">
+        <div class="sheet instr">
+          <h3><span class="instr-icon">У</span> Для учителя</h3>
+          <ol>
+            <li>Перед началом убедиться, что у учащихся есть доступ к ChatGPT на школьном/личном устройстве.</li>
+            <li>Раздать или вывести мастер-промпты нужных направлений.</li>
+            <li>Объяснить, что ИИ не заменяет текст произведения: при спорных ответах участник должен опираться на текст.</li>
+            <li>Попросить не вводить в чат личные, медицинские, контактные или иные приватные сведения.</li>
+            <li>После завершения квеста записать итоговый балл участника в протокол апробации.</li>
+          </ol>
+        </div>
+        <div class="sheet instr">
+          <h3><span class="instr-icon">Уч</span> Для ученика</h3>
+          <ol>
+            <li>Открой ChatGPT.</li>
+            <li>Вставь Мастер-промпт целиком.</li>
+            <li>Напиши «НАЧАТЬ КВЕСТ».</li>
+            <li>Отвечай своими словами и не переходи к следующему заданию, пока ИИ не закончит текущий этап.</li>
+            <li>При вопросах по сюжету опирайся на текст повести.</li>
+            <li>В конце сохрани итог: баллы, достижение и «Кодекс здоровых отношений».</li>
+          </ol>
+        </div>
+      </div>
+      <div class="note-box" id="block-s3-note">
+        <b>Важно:</b> в образовательном продукте «здоровые» и «токсичные» отношения рассматриваются не как диагноз людей, а как анализ отдельных моделей поведения: уважение/неуважение, доверие/контроль, ответственность/перекладывание вины, соблюдение/нарушение границ.
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. CASE MAP / SIGNATURE TIMELINE -->
+  <section id="map">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="s4.eyebrow">04 — Карта расследования</div>
+      <h2 class="sec-title" data-i18n="s4.title">Маршрут прохождения</h2>
+      <p class="sec-lede" data-i18n="s4.lede">Семь узлов дела, соединённых одной нитью — от допуска к расследованию до итогового профиля участника.</p>
+
+      <div class="board" id="block-s4" style="margin-top:34px;">
+        <div class="board-node start">
+          <div class="board-card"><span class="lvl-tag">Старт</span><h4>Проверка допуска</h4><p>Подтверждает правила и готовность.</p></div>
+        </div>
+        <div class="board-node">
+          <div class="board-card"><span class="pts">10 баллов</span><span class="lvl-tag">Направление 1</span><h4>Когда доверие рушится</h4><p>Факты и цепочка последствий.</p></div>
+        </div>
+        <div class="board-node">
+          <div class="board-card"><span class="pts">10 баллов</span><span class="lvl-tag">Направление 2</span><h4>Граница между любовью и болью</h4><p>Модели поведения и точка выбора.</p></div>
+        </div>
+        <div class="board-node">
+          <div class="board-card"><span class="pts">10 баллов</span><span class="lvl-tag">Направление 3</span><h4>Здоровые или разрушительные</h4><p>Суд аргументов и код доверия.</p></div>
+        </div>
+        <div class="board-node final">
+          <div class="board-card"><span class="pts">до 30</span><span class="lvl-tag">Финал</span><h4>Итоговый профиль</h4><p>Получает достижение и рекомендации.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. SCORE SYSTEM -->
+  <section id="score">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="s5.eyebrow">05 — Система оценивания</div>
+      <h2 class="sec-title" data-i18n="s5.title">Баллы и звания</h2>
+      <p class="sec-lede" data-i18n="s5.lede">Каждое направление приносит до 10 баллов. Итоговое звание — учебное игровое достижение, а не психологическая оценка личности.</p>
+
+      <div id="block-s5">
+      <div class="gauge" role="img" aria-label="Шкала баллов от 0 до 30, четыре диапазона званий">
+        <div class="g1">0–14</div><div class="g2">15–21</div><div class="g3">22–26</div><div class="g4">27–30</div>
+      </div>
+      <div class="gauge-labels">
+        <span>Наблюдатель</span><span>Исследователь</span><span>Аналитик</span><span>Эксперт</span>
+      </div>
+
+      <div class="table-wrap" style="margin-top:30px;">
+        <table>
+          <caption>Шкала интерпретации результата</caption>
+          <thead><tr><th>Баллы</th><th>Игровой статус</th><th>Описание</th></tr></thead>
+          <tbody>
+            <tr><td>0–14</td><td>Наблюдатель</td><td>Ученик узнаёт отдельные события, но ему нужна помощь в причинно-следственном анализе.</td></tr>
+            <tr><td>15–21</td><td>Исследователь</td><td>Ученик понимает сюжет и начинает объяснять мотивы и последствия.</td></tr>
+            <tr><td>22–26</td><td>Аналитик</td><td>Ученик уверенно связывает литературные события с проблемой отношений.</td></tr>
+            <tr><td>27–30</td><td>Эксперт здоровых отношений</td><td>Ученик аргументированно анализирует решения героев и формулирует самостоятельные выводы.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6-7. THREE TRACKS -->
+  <section id="tracks">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="s6.eyebrow">06–07 — Три направления дела</div>
+      <h2 class="sec-title" data-i18n="s6.title">Три направления расследования</h2>
+      <p class="sec-lede" data-i18n="s6.lede">У каждого направления — свой мастер-промпт и свои задания. Можно вставить в ChatGPT один промпт, несколько или все три по очереди.</p>
+
+      <div style="margin-top:30px;">
+
+        <!-- TRACK 1 -->
+        <details class="level" open>
+          <summary><span class="lvl-num">01</span><span class="lvl-title">«Когда доверие рушится»</span><span class="lvl-arrow">→</span></summary>
+          <div class="lvl-body">
+            <p>Направление о фактах и о том, как один поступок запускает цепочку последствий, разрушающих доверие.</p>
+            <h5>Мастер-промпт направления 1</h5>
+            <div class="prompt-doc">
+              <pre id="promptText1">Ты — ведущий образовательного ИИ-квеста «Дело № 137. Тайна красной косынки», направление «Когда доверие рушится», по повести Ч. Т. Айтматова «Тополёк мой в красной косынке». Дай мне два задания по очереди: 1) вопросы на восстановление фактов о том, как и почему рушится доверие между Ильясом и Асель; 2) построение цепочки из четырёх звеньев («поступок → ближайший эффект → последствие → урок») на основе ключевого поступка Ильяса. Задавай по одному заданию за раз. Не показывай верный ответ до моего ответа. За ошибку — одна короткая подсказка и вторая попытка. Не выдумывай факты произведения. После каждого задания показывай счёт (максимум 10 баллов). В конце подведи итог: что укрепляет доверие, а что его разрушает. Не проси личные данные. Начни словами: «Направление открыто: Когда доверие рушится. Восстанавливаем, что произошло между Ильясом и Асель».</pre>
+              <button class="copy-btn" data-copy-target="promptText1" type="button">Скопировать промпт</button>
+            </div>
+
+            <h5>Задание 1 — Архивное дело</h5>
+            <p><b>Задача:</b> проверить понимание сюжета без механического пересказа. 1 балл за точный смысл, 0,5 — за частичный, 0 — если ответ противоречит сюжету.</p>
+            <details class="teacher-key">
+              <summary>Ключ для учителя</summary>
+              <div class="table-wrap" style="margin-top:10px;">
+                <table>
+                  <thead><tr><th>Вопрос</th><th>Ключ для учителя</th></tr></thead>
+                  <tbody>
+                    <tr><td>1. Кто такие Ильяс и Асель?</td><td>Они становятся центральной парой повести; Ильяс — шофёр, Асель — девушка, с которой он знакомится на дороге.</td></tr>
+                    <tr><td>2. Что становится важным препятствием в начале их истории?</td><td>Семейные обстоятельства Асели: она просватана, и её брак предполагается по решению семей.</td></tr>
+                    <tr><td>3. Что становится причиной разрушения доверия между Ильясом и Асель?</td><td>Измена Ильяса с Кадичей и связанные с этим последствия.</td></tr>
+                    <tr><td>4. Кто такой Байтемир?</td><td>Дорожный мастер, который становится мужем Асели и заботится о ней и Самате.</td></tr>
+                    <tr><td>5. Какой важный выбор делает Асель при встрече с Ильясом спустя время?</td><td>Она не возвращается к Ильясу и принимает самостоятельное решение о своей дальнейшей жизни.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </details>
+
+            <h5>Задание 2 — Цепочка последствий</h5>
+            <p><b>Задание:</b> выбери поступок Ильяса, который сильнее всего повлиял на разрушение отношений, и заполни цепочку из четырёх звеньев.</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Звено</th><th>Что должен написать участник</th></tr></thead>
+                <tbody>
+                  <tr><td>1. Поступок</td><td>Конкретный выбор/действие Ильяса</td></tr>
+                  <tr><td>2. Ближайший эффект</td><td>Что произошло сразу после него</td></tr>
+                  <tr><td>3. Последствие</td><td>Как это изменило отношения героев</td></tr>
+                  <tr><td>4. Урок</td><td>Чему этот эпизод может научить современного подростка</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+
+        <!-- TRACK 2 -->
+        <details class="level">
+          <summary><span class="lvl-num">02</span><span class="lvl-title">«Граница между любовью и болью»</span><span class="lvl-arrow">→</span></summary>
+          <div class="lvl-body">
+            <p>Направление о том, как отличить уважительное поведение от тревожного и разрушительного — и как поступок героя мог бы измениться в точке выбора.</p>
+            <h5>Мастер-промпт направления 2</h5>
+            <div class="prompt-doc">
+              <pre id="promptText2">Ты — ведущий образовательного ИИ-квеста «Дело № 137. Тайна красной косынки», направление «Граница между любовью и болью», по повести Ч. Т. Айтматова «Тополёк мой в красной косынке». Дай мне два задания по очереди: 1) пять ситуаций из отношений, которые нужно классифицировать как уважительную (З), тревожную (Т) или неприемлемую (Н) модель поведения, с обязательным объяснением ответа; 2) поиск точки выбора — момента, когда герой мог поступить иначе, с предложением безопасной и реалистичной альтернативы. Задавай по одному заданию за раз. Не показывай верный ответ до моего ответа. За ошибку — одна короткая подсказка и вторая попытка. Не выдумывай факты произведения. После каждого задания показывай счёт (максимум 10 баллов). Не ставь диагнозы людям — говори о моделях поведения. Не проси личные данные. Начни словами: «Направление открыто: Граница между любовью и болью. Разбираем, где заканчивается забота и начинается вред».</pre>
+              <button class="copy-btn" data-copy-target="promptText2" type="button">Скопировать промпт</button>
+            </div>
+
+            <h5>Задание 1 — Красные флажки</h5>
+            <p>Участник классифицирует ситуацию как <span class="badge badge-z">З — уважительная</span> <span class="badge badge-t">Т — тревожная</span> <span class="badge badge-n">Н — неприемлемая</span> модель поведения и объясняет ответ.</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Ситуация</th><th>Ключ</th></tr></thead>
+                <tbody>
+                  <tr><td>Человек уважает право другого отказаться от разговора до того момента, когда тот будет готов.</td><td><span class="badge badge-z">З</span></td></tr>
+                  <tr><td>Один человек решает, что знает лучше другого, что ему нужно, и игнорирует его мнение.</td><td><span class="badge badge-t">Т</span></td></tr>
+                  <tr><td>Человек оправдывает нарушение доверия словами «я так сделал, потому что люблю».</td><td><span class="badge badge-n">Н</span></td></tr>
+                  <tr><td>После конфликта человек признаёт свою ответственность и не перекладывает её на другого.</td><td><span class="badge badge-z">З</span></td></tr>
+                  <tr><td>Один человек пытается контролировать круг общения другого и запрещает поддерживать связи с друзьями.</td><td><span class="badge badge-n">Н</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h5>Задание 2 — Точка выбора</h5>
+            <p><b>Задание:</b> найти момент, когда герой мог выбрать другой способ действия, и предложить безопасную, реалистичную альтернативу.</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Шаг</th><th>Вопрос участнику</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td>Какой момент ты выбираешь?</td></tr>
+                  <tr><td>2</td><td>Какая потребность или эмоция могла влиять на героя?</td></tr>
+                  <tr><td>3</td><td>Что герой мог сделать иначе?</td></tr>
+                  <tr><td>4</td><td>Как это могло изменить дальнейшие последствия?</td></tr>
+                  <tr><td>5</td><td>Какой принцип здоровых отношений здесь важен?</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+
+        <!-- TRACK 3 -->
+        <details class="level">
+          <summary><span class="lvl-num">03</span><span class="lvl-title">«Здоровые или разрушительные»</span><span class="lvl-arrow">→</span></summary>
+          <div class="lvl-body">
+            <p>Направление о взрослой аргументации: можно ли оправдать неверный поступок сильными чувствами — и какие правила помогают строить здоровые отношения.</p>
+            <h5>Мастер-промпт направления 3</h5>
+            <div class="prompt-doc">
+              <pre id="promptText3">Ты — ведущий образовательного ИИ-квеста «Дело № 137. Тайна красной косынки», направление «Здоровые или разрушительные», по повести Ч. Т. Айтматова «Тополёк мой в красной косынке». Дай мне два задания по очереди: 1) суд аргументов по спорному утверждению «Сильные чувства могут оправдать неправильный поступок» — аргумент за, аргумент против и собственный вывод; 2) финальное задание «Код доверия» — сформулировать пять собственных правил здоровых отношений с кратким объяснением каждого. Задавай по одному заданию за раз. Не спорь за участника, а задавай уточняющие вопросы. За ошибку — одна короткая подсказка и вторая попытка. Не выдумывай факты произведения. После каждого задания показывай счёт (максимум 10 баллов). В конце свяжи правила участника с принципами уважения, доверия, границ, ответственности и диалога. Не проси личные данные. Начни словами: «Направление открыто: Здоровые или разрушительные. Разбираем, что оправдывает поступок, а что — нет».</pre>
+              <button class="copy-btn" data-copy-target="promptText3" type="button">Скопировать промпт</button>
+            </div>
+
+            <h5>Задание 1 — Суд аргументов</h5>
+            <p><b>Спорное утверждение:</b> «Сильные чувства могут оправдать неправильный поступок».</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Критерий</th><th>Баллы</th></tr></thead>
+                <tbody>
+                  <tr><td>Аргумент «за» логичен и связан с мотивами героя</td><td>1</td></tr>
+                  <tr><td>Аргумент «против» показывает последствия и ответственность</td><td>2</td></tr>
+                  <tr><td>Собственный вывод учитывает обе позиции</td><td>2</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h5>Задание 2 — Код доверия</h5>
+            <p><b>Финальное творческое задание:</b> составь пять собственных правил здоровых отношений. Каждое правило объясни одним предложением. 1 балл за каждое самостоятельное и понятное правило.</p>
+            <div class="grid-3">
+              <span class="mini-tag">Уважение</span>
+              <span class="mini-tag">Доверие</span>
+              <span class="mini-tag">Личные границы</span>
+              <span class="mini-tag">Ответственность</span>
+              <span class="mini-tag">Открытый диалог</span>
+            </div>
+          </div>
+        </details>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. FINAL -->
+  <section id="final">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="s8.eyebrow">08 — Итог расследования</div>
+      <h2 class="sec-title" data-i18n="s8.title">Финал квеста</h2>
+      <p class="sec-lede" data-i18n="s8.lede">После завершения выбранных направлений ИИ выдаёт результат строго в этом формате.</p>
+
+      <div class="closed-case" style="margin-top:26px;">
+        <span class="stamp-final">Дело закрыто</span>
+        <pre>Твой результат: __/30
+Достижение: ______
+Сильная сторона: ______
+Зона для развития: ______
+
+Твой КОДЕКС ЗДОРОВЫХ ОТНОШЕНИЙ:
+1. ______
+2. ______
+3. ______
+4. ______
+5. ______</pre>
+        <p class="final-note">«Один выбор может изменить отношения, но уважение, ответственность и право другого человека на собственное решение остаются фундаментальными ценностями».</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. SOURCES -->
+  <section id="sources">
+    <div class="wrap">
+      <div class="eyebrow" data-i18n="s10.eyebrow">10 — Примечание о достоверности</div>
+      <h2 class="sec-title" data-i18n="s10.title">Источники</h2>
+      <p class="sec-lede">При подготовке сценария использованы открытые справочные материалы о повести. Ключевые сюжетные опоры сверены между несколькими источниками. Для школьной работы приоритетным источником остаётся полный текст произведения; пересказ используется только для проверки канвы событий.</p>
+      <div class="sheet" style="margin-top:20px;">
+        <ul style="padding-left:20px; margin:0; font-size:15px;">
+          <li>Айтматов Ч. Т. Тополёк мой в красной косынке: повесть. Дружба народов. — 1961. (основной источник — полный текст произведения).</li>
+          <li>Краткое содержание повести «Тополёк мой в красной косынке» // Брифли. Материалы использованы только для сверки сюжетной канвы.</li>
+          <li>Тополёк мой в красной косынке — справочный материал о сюжете и персонажах. Материалы использованы только для сверки сюжетной канвы.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span data-i18n="footer.txt">ДЕЛО № 137 · АВТОРСКИЙ ЦИФРОВОЙ ОБРАЗОВАТЕЛЬНЫЙ ПРОДУКТ · ГОТОВ ДЛЯ АПРОБАЦИИ</span>
+</footer>
+
+<script>
+  document.querySelectorAll('.copy-btn[data-copy-target]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var txt = document.getElementById(btn.getAttribute('data-copy-target'));
+      if (!txt) return;
+      var text = txt.textContent;
+      function done(){
+        var original = btn.getAttribute('data-label') || btn.textContent;
+        btn.setAttribute('data-label', original);
+        btn.textContent = 'Скопировано ✓';
+        btn.classList.add('copied');
+        setTimeout(function(){
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 2000);
+      }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done).catch(function(){
+          fallbackCopy(text, done);
+        });
+      } else {
+        fallbackCopy(text, done);
+      }
+    });
+  });
+  function fallbackCopy(text, cb){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+    cb();
+  }
+
+  // ---------- Language switcher ----------
+  var currentLang = 'ru';
+  var i18n = {
+    gate: {
+      title:{ru:'Прежде чем открыть дело', kz:'Істі ашпас бұрын', en:'Before you open the case'},
+      lede:{ru:'Выберите язык прохождения — это займёт несколько секунд.',
+            kz:'Өту тілін таңдаңыз — бұл бірнеше секунд алады.',
+            en:'Choose the language — it takes a few seconds.'},
+      lang:{ru:'Язык / Тіл / Language', kz:'Язык / Тіл / Language', en:'Язык / Тіл / Language'}
+    },
+    nav: {
+      dossier: {ru:'Досье', kz:'Дерекнама', en:'Dossier'},
+      cast: {ru:'Лица', kz:'Кейіпкерлер', en:'Characters'},
+      instructions: {ru:'Инструкции', kz:'Нұсқаулық', en:'Instructions'},
+      map: {ru:'Карта', kz:'Карта', en:'Map'},
+      score: {ru:'Баллы', kz:'Ұпайлар', en:'Score'},
+      tracks: {ru:'Направления', kz:'Бағыттар', en:'Tracks'},
+      final: {ru:'Финал', kz:'Қорытынды', en:'Final'},
+      sources: {ru:'Источники', kz:'Дереккөздер', en:'Sources'}
+    },
+    hero: {
+      ribbon: {ru:'Красная косынка', kz:'Қызыл орамал', en:'Red Kerchief'},
+      stamp: {ru:'Готов к апробации', kz:'Апробацияға дайын', en:'Ready for piloting'},
+      title: {ru:'Дело № 137.<br>Тайна красной&nbsp;косынки', kz:'№137-іс.<br>Қызыл орамалдың&nbsp;құпиясы', en:'Case No.137.<br>The Secret of the Red&nbsp;Kerchief'},
+      subtitle: {ru:'Авторский ИИ-квест по литературе', kz:'ЖИ негізіндегі авторлық әдебиет квесті', en:'An original AI literature quest'},
+      basis: {ru:'По повести Чингиза Айтматова <em>«Тополёк мой в красной косынке»</em>. Направление: литература + искусственный интеллект + профилактика токсичных отношений.',
+              kz:'Шыңғыс Айтматовтың <em>«Қызыл орамалды терегім»</em> повесі бойынша. Бағыты: әдебиет + жасанды интеллект + улы қарым-қатынастың алдын алу.',
+              en:'Based on Chingiz Aitmatov\'s novella <em>“My Little Poplar Tree in a Red Kerchief.”</em> Focus: literature + artificial intelligence + prevention of toxic relationships.'},
+      'meta.age': {ru:'Возраст:', kz:'Жасы:', en:'Age:'},
+      'meta.ageval': {ru:'14–16 лет', kz:'14–16 жас', en:'14–16 years'},
+      'meta.time': {ru:'Время:', kz:'Уақыты:', en:'Duration:'},
+      'meta.timeval': {ru:'30–40 мин', kz:'30–40 мин', en:'30–40 min'},
+      'meta.format': {ru:'Формат:', kz:'Форматы:', en:'Format:'},
+      'meta.formatval': {ru:'индивидуально / в парах', kz:'жеке / жұппен', en:'individual / in pairs'},
+      'meta.platform': {ru:'Платформа:', kz:'Платформа:', en:'Platform:'},
+      'meta.max': {ru:'Максимум:', kz:'Ең көбі:', en:'Maximum:'},
+      'meta.maxval': {ru:'30 баллов', kz:'30 ұпай', en:'30 points'},
+      scroll: {ru:'↓ открыть дело', kz:'↓ істі ашу', en:'↓ open the case'}
+    },
+    s1: {
+      eyebrow:{ru:'01 — Паспорт квеста', kz:'01 — Квест паспорты', en:'01 — Quest passport'},
+      title:{ru:'Досье проекта', kz:'Жоба дерекнамасы', en:'Project dossier'},
+      lede:{ru:'Формальные параметры квеста — то, что фиксируется в протоколе апробации перед началом работы.',
+            kz:'Квесттің ресми параметрлері — жұмыс басталар алдында апробация хаттамасында тіркеледі.',
+            en:'The formal parameters of the quest, recorded in the pilot-run protocol before the session begins.'}
+    },
+    s2: {
+      eyebrow:{ru:'02 — Сюжетная основа', kz:'02 — Сюжеттік негіз', en:'02 — Plot basis'},
+      title:{ru:'Действующие лица дела', kz:'Істің кейіпкерлері', en:'Characters of the case'},
+      lede:{ru:'Квест опирается только на опорные события повести: знакомство Ильяса и Асели, их совместная жизнь и рождение сына Самата, конфликт и измена Ильяса Кадиче, уход Асели, встреча с Байтемиром, отказ Асели вернуться и позднее осознание Ильясом последствий своих поступков.',
+            kz:'Квест повестің тек негізгі оқиғаларына сүйенеді: Ильяс пен Әселдің танысуы, олардың бірлескен өмірі және ұлы Саматтың дүниеге келуі, Ильястың қақтығысы мен Қадишаға опасыздығы, Әселдің кетуі, Байтемірмен кездесуі, Әселдің Ильяске қайтып оралудан бас тартуы және Ильястың өз әрекеттерінің салдарын кейінірек түсінуі.',
+            en:'The quest relies only on the novella\'s key events: Ilyas and Asel meeting, their life together and the birth of their son Samat, Ilyas\'s conflict and his affair with Kadicha, Asel\'s departure, her meeting with Baytemir, Asel\'s refusal to return to Ilyas, and Ilyas\'s later realization of the consequences of his actions.'}
+    },
+    s3: {
+      eyebrow:{ru:'03 — Протокол проведения', kz:'03 — Өткізу хаттамасы', en:'03 — Running the session'},
+      title:{ru:'Инструкции', kz:'Нұсқаулық', en:'Instructions'},
+      'teacher.h':{ru:'Для учителя', kz:'Мұғалімге', en:'For the teacher'},
+      'teacher.1':{ru:'Перед началом убедиться, что у учащихся есть доступ к ChatGPT на школьном/личном устройстве.', kz:'Бастамас бұрын оқушылардың мектеп/жеке құрылғысында ChatGPT-ке қолжетімділігі бар екеніне көз жеткізіңіз.', en:'Before starting, make sure students have access to ChatGPT on a school or personal device.'},
+      'teacher.2':{ru:'Раздать или вывести мастер-промпты нужных направлений.', kz:'Қажетті бағыттардың мастер-промпттарын таратыңыз немесе экранға шығарыңыз.', en:'Hand out or display the master prompts of the tracks you need.'},
+      'teacher.3':{ru:'Объяснить, что ИИ не заменяет текст произведения: при спорных ответах участник должен опираться на текст.', kz:'ЖИ туынды мәтінін алмастырмайтынын түсіндіріңіз: даулы жауаптарда қатысушы мәтінге сүйенуі керек.', en:'Explain that the AI does not replace the text: when answers are disputed, the participant should refer back to the novella.'},
+      'teacher.4':{ru:'Попросить не вводить в чат личные, медицинские, контактные или иные приватные сведения.', kz:'Чатқа жеке, медициналық, байланыс немесе өзге де құпия деректерді енгізбеуді сұраңыз.', en:'Ask students not to enter personal, medical, contact, or other private information into the chat.'},
+      'teacher.5':{ru:'После завершения квеста записать итоговый балл участника в протокол апробации.', kz:'Квест аяқталғаннан кейін қатысушының қорытынды ұпайын апробация хаттамасына жазыңыз.', en:'After the quest ends, record the participant\'s final score in the pilot-run protocol.'},
+      'student.h':{ru:'Для ученика', kz:'Оқушыға', en:'For the student'},
+      'student.1':{ru:'Открой ChatGPT.', kz:'ChatGPT-ті аш.', en:'Open ChatGPT.'},
+      'student.2':{ru:'Вставь Мастер-промпт целиком.', kz:'Мастер-промптты толығымен қой.', en:'Paste the entire Master prompt.'},
+      'student.3':{ru:'Напиши «НАЧАТЬ КВЕСТ».', kz:'«КВЕСТТІ БАСТАУ» деп жаз.', en:'Type “START THE QUEST.”'},
+      'student.4':{ru:'Отвечай своими словами и не переходи к следующему заданию, пока ИИ не закончит текущий этап.', kz:'Өз сөзіңмен жауап бер және ЖИ ағымдағы кезеңді аяқтамайынша келесі тапсырмаға көшпе.', en:'Answer in your own words, and don\'t move to the next task until the AI finishes the current stage.'},
+      'student.5':{ru:'При вопросах по сюжету опирайся на текст повести.', kz:'Сюжет бойынша сұрақтарда повесть мәтініне сүйен.', en:'For plot questions, rely on the text of the novella.'},
+      'student.6':{ru:'В конце сохрани итог: баллы, достижение и «Кодекс здоровых отношений».', kz:'Соңында нәтижені сақта: ұпайлар, жетістік және «Салауатты қарым-қатынас кодексі».', en:'At the end, save your result: score, achievement, and the “Healthy Relationships Code.”'},
+      'note.b':{ru:'Важно:', kz:'Маңызды:', en:'Important:'},
+      'note.t':{ru:'в образовательном продукте «здоровые» и «токсичные» отношения рассматриваются не как диагноз людей, а как анализ отдельных моделей поведения: уважение/неуважение, доверие/контроль, ответственность/перекладывание вины, соблюдение/нарушение границ.',
+                kz:'бұл білім беру өнімінде «салауатты» және «улы» қарым-қатынас адамдарға қойылған диагноз ретінде емес, жеке мінез-құлық үлгілерінің талдауы ретінде қаралады: құрмет/құрметсіздік, сенім/бақылау, жауапкершілік/кінәні басқаға аудару, шекараны сақтау/бұзу.',
+                en:'in this educational product, “healthy” and “toxic” relationships are not treated as a diagnosis of people, but as an analysis of specific behavior patterns: respect/disrespect, trust/control, responsibility/blame-shifting, respecting/violating boundaries.'}
+    },
+    s4: {
+      eyebrow:{ru:'04 — Карта расследования', kz:'04 — Тергеу картасы', en:'04 — Investigation map'},
+      title:{ru:'Маршрут прохождения', kz:'Өту бағыты', en:'Route through the quest'},
+      lede:{ru:'Семь узлов дела, соединённых одной нитью — от допуска к расследованию до итогового профиля участника.',
+            kz:'Бір жіппен байланысқан істің жеті түйіні — тергеуге рұқсаттан қатысушының қорытынды профиліне дейін.',
+            en:'Seven nodes of the case, joined by a single thread — from clearance to investigate, to the participant\'s final profile.'}
+    },
+    s5: {
+      eyebrow:{ru:'05 — Система оценивания', kz:'05 — Бағалау жүйесі', en:'05 — Scoring system'},
+      title:{ru:'Баллы и звания', kz:'Ұпайлар мен атақтар', en:'Points and ranks'},
+      lede:{ru:'Каждое направление приносит до 10 баллов. Итоговое звание — учебное игровое достижение, а не психологическая оценка личности.',
+            kz:'Әр бағыт 10 ұпайға дейін береді. Қорытынды атақ — оқу-ойын жетістігі, тұлғаны психологиялық бағалау емес.',
+            en:'Each track is worth up to 10 points. The final rank is a learning-game achievement, not a psychological assessment.'}
+    },
+    s6: {
+      eyebrow:{ru:'06–07 — Три направления дела', kz:'06–07 — Істің үш бағыты', en:'06–07 — Three tracks of the case'},
+      title:{ru:'Три направления расследования', kz:'Тергеудің үш бағыты', en:'Three investigation tracks'},
+      lede:{ru:'У каждого направления — свой мастер-промпт и свои задания. Можно вставить в ChatGPT один промпт, несколько или все три по очереди.',
+            kz:'Әр бағыттың өз мастер-промпты және өз тапсырмалары бар. ChatGPT-ке бір промптты, бірнешеуін немесе үшеуін кезек-кезек қоюға болады.',
+            en:'Each track has its own master prompt and its own tasks. Paste one, several, or all three prompts into ChatGPT, one after another.'}
+    },
+    s8: {
+      eyebrow:{ru:'08 — Итог расследования', kz:'08 — Тергеу қорытындысы', en:'08 — Investigation result'},
+      title:{ru:'Финал квеста', kz:'Квесттің қорытындысы', en:'Quest finale'},
+      lede:{ru:'После завершения выбранных направлений ИИ выдаёт результат строго в этом формате.',
+            kz:'Таңдалған бағыттар аяқталғаннан кейін ЖИ нәтижені дәл осы форматта береді.',
+            en:'After the chosen tracks are complete, the AI issues the result strictly in this format.'}
+    },
+    s10: {
+      eyebrow:{ru:'09 — Примечание о достоверности', kz:'09 — Дұрыстығы туралы ескертпе', en:'09 — Note on accuracy'},
+      title:{ru:'Источники', kz:'Дереккөздер', en:'Sources'}
+    },
+    footer: {
+      txt:{ru:'ДЕЛО № 137 · АВТОРСКИЙ ЦИФРОВОЙ ОБРАЗОВАТЕЛЬНЫЙ ПРОДУКТ · ГОТОВ ДЛЯ АПРОБАЦИИ',
+           kz:'№137-ІС · АВТОРЛЫҚ ЦИФРЛЫҚ БІЛІМ БЕРУ ӨНІМІ · АПРОБАЦИЯҒА ДАЙЫН',
+           en:'CASE No.137 · ORIGINAL DIGITAL EDUCATIONAL PRODUCT · READY FOR PILOTING'}
+    }
+  };
+
+  function applyLang(lang){
+    currentLang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var key = el.getAttribute('data-i18n');
+      var parts = key.split('.');
+      var group = parts[0];
+      var sub = parts.slice(1).join('.');
+      if (i18n[group] && i18n[group][sub] && i18n[group][sub][lang] !== undefined) {
+        el.innerHTML = i18n[group][sub][lang];
+      }
+    });
+    document.querySelectorAll('.lang-switch button').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    });
+    document.documentElement.lang = lang === 'kz' ? 'kk' : lang;
+  }
+
+  document.querySelectorAll('.lang-switch button').forEach(function(btn){
+    btn.addEventListener('click', function(){ applyLang(btn.getAttribute('data-lang')); });
+  });
+</script>
+
+</body>
+</html>
